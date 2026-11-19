@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Управление сайтом</title>
+<link href="https://fonts.googleapis.com/css2?family=Marck+Script&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+:root{--ink:#4a2a3a;--bg:#fdf1f5;--card:#fff;--acc:#e0749c;--line:#f0cdd9}
+@media (prefers-color-scheme:dark){:root{--ink:#f6e3ea;--bg:#241a2c;--card:#34263e;--line:#4d3a5a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top,0) 0 110px}
+h1{font-family:"Marck Script",cursive;font-weight:400;font-size:34px;margin:0;text-align:center;padding:18px 10px 4px}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0}
+label{display:block;font-size:13px;opacity:.7;margin:10px 0 3px}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px}
+input[type=checkbox]{width:24px;height:24px}
+textarea{min-height:150px}
+.btn{font:inherit;border:0;border-radius:999px;padding:10px 18px;background:var(--acc);color:#fff;cursor:pointer}
+.btn.g{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;align-items:center}
+.it{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.it:last-child{border:0}
+.em{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;background:var(--line)}
+.it .t{flex:1;min-width:0}.it .t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.it small{opacity:.6}
+.ic{border:0;background:none;font-size:20px;padding:4px 6px;color:var(--ink);cursor:pointer}
+.sw{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.sw i{width:34px;height:34px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+.sw i.on{border-color:var(--ink)}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0));background:var(--card);border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;justify-content:center;z-index:20}
+.sheet{position:fixed;inset:0;background:var(--bg);overflow-y:auto;display:none;padding:env(safe-area-inset-top,0) 0 40px}
+.sheet.on{display:block}
+#act{z-index:8}#sheet{z-index:5}#lsheet{z-index:6}#esheet{z-index:7}
+#msg{font-size:14px;text-align:center;min-height:20px}
+.dirty{color:#d63a6a}
+.ph{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}
+.ph div{position:relative;width:84px;height:84px;border-radius:10px;background-size:cover;background-position:center;background-color:var(--line)}
+.ph b{position:absolute;top:-7px;right:-7px;background:#d63a6a;color:#fff;border-radius:50%;width:24px;height:24px;text-align:center;line-height:24px;font-weight:400;cursor:pointer}
+.secs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.secs button{text-align:left;padding:12px}
+.hint{font-size:13px;opacity:.65;margin-top:6px}
+</style>
+</head>
+<body>
+<h1>Управление сайтом 💌</h1>
+<div class="wrap">
+ <div style="text-align:center"><button class="btn g" id="logout" style="margin-top:8px;font-size:14px">⚙ Сменить репозиторий / токен</button></div>
+ <div class="box" id="login">
+  <b>Подключение к GitHub</b>
+  <label>Репозиторий (владелец/название)</label><input id="repo" placeholder="владелец/название, например santsneki/мой-сайт">
+  <label>Ветка</label><input id="br" value="main">
+  <label>Токен GitHub (хранится только в этом телефоне)</label><input id="tok" type="password" autocomplete="off" placeholder="github_pat_...">
+  <div class="row" style="margin-top:12px"><button class="btn" id="conn">Подключиться</button></div>
+ </div>
+ <div id="main" style="display:none">
+  <div class="box">
+   <b>Настройки сайта</b>
+   <label>Заголовок</label><input id="cTitle">
+   <label>Подзаголовок</label><input id="cSub">
+   <label>Дата начала отношений (счётчик дней и годовщина)</label><input id="cStart" type="date">
+   <label>Дата следующей встречи (отсчёт «До встречи»)</label><input id="cMeet" type="date">
+   <label>Сообщение в конце квиза</label><input id="cQuizEnd">
+   <label>Код входа (пусто = не менять, «-» = убрать код)</label><input id="cPin" placeholder="например 1402">
+   <label>Музыка (путь к mp3, например music.mp3)</label><input id="cMus">
+   <label>Адрес базы Firebase (для вкладки «Активность»)</label><input id="cDb" placeholder="https://xxx-default-rtdb.firebaseio.com">
+   <label>Секретный ключ</label><div class="row"><input id="cKey"><button class="btn g" id="genKey" type="button">Новый</button></div>
+   <label>Правила для Firebase (скопируй в раздел Rules и нажми Publish)</label><textarea id="rules" readonly style="min-height:150px;font-size:12px"></textarea>
+  </div>
+  <button class="btn" id="actBtn" style="width:100%;margin-top:12px">📬 Активность</button>
+  <div class="box" id="list"></div>
+  <div class="row"><button class="btn" id="add" style="flex:1">＋ Новое письмо</button><button class="btn g" id="months" style="flex:1">🗓 Письма на 12 месяцев</button></div>
+  <div class="box"><b>Разделы сайта</b><div class="secs" id="secs" style="margin-top:10px"></div><div class="hint">Раздел появляется на сайте, когда в нём есть хотя бы одна запись.</div></div>
+ </div>
+</div>
+<div class="bar" id="bar" style="display:none"><span id="msg"></span><button class="btn" id="pub">Опубликовать на сайте</button></div>
+
+<div class="sheet" id="sheet"><div class="wrap">
+ <h1 id="shT">Письмо</h1>
+ <div class="box">
+  <div class="row"><div style="width:90px"><label>Эмодзи</label><input id="fE" maxlength="4"></div><div style="flex:1"><label>Заголовок конверта</label><input id="fT"></div></div>
+  <label>Текст письма (пустая строка = новый абзац)</label><textarea id="fX" style="min-height:240px"></textarea>
+  <label>Цвет конверта</label><div class="sw" id="fC"></div>
+  <label>Тип</label><select id="fY"><option value="">Обычное</option><option value="hug">С анимацией объятий</option><option value="secret">Секретное (золотое)</option></select>
+  <label>Фон бумаги (акварель)</label><select id="fB"><option value="">Обычный</option><option value="sakura">Сакура</option><option value="stars">Звёздное небо</option><option value="snow">Снег</option><option value="sunset">Закат</option><option value="mint">Мята</option></select>
+  <label>Откроется только с даты (пусто = сразу)</label><input id="fU" type="date">
+  <label>Голосовое (путь к файлу, например voice1.mp3)</label><input id="fA">
+  <label>Фото в письме</label><div class="ph" id="fP"></div><button class="btn g" id="fPb" type="button">＋ Добавить фото</button><div id="fPs" style="font-size:13px;margin-top:6px"></div>
+ </div>
+ <div class="row" style="justify-content:center;gap:12px"><button class="btn g" id="fCancel">Отмена</button><button class="btn" id="fOk">Готово</button></div>
+</div></div>
+
+<div class="sheet" id="lsheet"><div class="wrap">
+ <h1 id="lT"></h1><div class="box" id="lList"></div>
+ <div class="row" style="justify-content:center;gap:12px"><button class="btn g" id="lBack">Назад</button><button class="btn" id="lAdd">＋ Добавить</button></div>
+</div></div>
+<div class="sheet" id="esheet"><div class="wrap">
+ <h1 id="eT">Запись</h1><div class="box" id="eForm"></div>
+ <div class="row" style="justify-content:center;gap:12px"><button class="btn g" id="eCancel">Отмена</button><button class="btn" id="eOk">Готово</button></div>
+</div></div>
+<div class="sheet" id="act"><div class="wrap">
+ <h1>Активность 📬</h1><div class="box" id="actSum"></div><div class="box" id="actList"></div>
+ <div class="row" style="justify-content:center;gap:12px"><button class="btn g" id="actBack">Назад</button><button class="btn" id="actRef">Обновить</button></div>
+</div></div>
+<input id="file" type="file" accept="image/*" multiple style="display:none">
+
+<script>
+const $=id=>document.getElementById(id);
+const PAL=[['#fbd3de','#f4b6c8'],['#e4d9fa','#d3c2f3'],['#ffe7c9','#fdd2a8'],['#fbc9cf','#f2a3ae'],['#cfd9f5','#b8c6ee'],['#d3eee3','#bfe3d3'],['#fcd5e8','#f7b8d7'],['#fff0b8','#f5d77a']];
+const SCH={
+ timeline:{t:'📖 История',f:[['date','Дата','date'],['title','Заголовок'],['text','Описание','area'],['photo','Фото','photo']]},
+ coupons:{t:'🎟 Купоны',f:[['emoji','Эмодзи'],['title','Название'],['text','Условия','area']]},
+ checklist:{t:'✅ Список мечт',f:[['text','Что сделать'],['done','Уже сделано','check']]},
+ gallery:{t:'🖼 Альбом',f:[['photo','Фото','photo'],['caption','Подпись']]},
+ quiz:{t:'❓ Квиз',f:[['q','Вопрос'],['options','Варианты ответов (каждый с новой строки)','lines'],['answer','Номер правильного ответа','number']]},
+ playlist:{t:'🎵 Плейлист',f:[['title','Название песни'],['artist','Исполнитель'],['url','Ссылка на трек, альбом или плейлист из Яндекс Музыки (Поделиться → скопировать ссылку). Можно и YouTube/Spotify','area']]},
+ holidays:{t:'🎉 Особые даты',f:[['date','Дата (повторяется каждый год)','date'],['emoji','Эмодзи'],['title','Заголовок'],['text','Поздравление','area']]}
+};
+const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('ow:'+s)))].map(b=>b.toString(16).padStart(2,'0')).join('');
+const b64enc=s=>{const b=new TextEncoder().encode(s);let r='';b.forEach(x=>r+=String.fromCharCode(x));return btoa(r)};
+const b64dec=s=>{const r=atob(s.replace(/\n/g,''));return new TextDecoder().decode(Uint8Array.from(r,c=>c.charCodeAt(0)))};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+let S=JSON.parse(localStorage.getItem('ow_admin')||'{}'),data=null,sha1=null,dirty=false,editIdx=-1,col=0,curPhotos=[],secKey=null,secIdx=-1,secVals={};
+const say=(t,bad)=>{$('msg').textContent=t;$('msg').className=bad?'dirty':''};
+const mark=()=>{dirty=true;say('Есть неопубликованные изменения',1)};
+const api=(p,o={})=>fetch(`https://api.github.com/repos/${S.repo}/contents/${p}`+(o.method?'':`?ref=${S.br}&t=${Date.now()}`),{...o,headers:{Authorization:'Bearer '+S.tok,Accept:'application/vnd.github+json','Content-Type':'application/json'}});
+const rawUrl=p=>p?`https://raw.githubusercontent.com/${S.repo}/${S.br}/${p}`:'';
+if(S.tok){$('repo').value=S.repo;$('br').value=S.br;$('tok').value=S.tok;connect()}
+$('logout').onclick=()=>{localStorage.removeItem('ow_admin');location.reload()};
+$('conn').onclick=()=>{S={repo:$('repo').value.trim(),br:$('br').value.trim()||'main',tok:$('tok').value.trim()};connect()};
+async function connect(){say('Подключаюсь…');$('bar').style.display='flex';
+ try{const r=await api('letters.json');if(!r.ok)throw new Error(r.status===404?'Не найден репозиторий или файл letters.json. Проверь, что репозиторий указан как владелец/название и токен выдан именно для него':r.status===401||r.status===403?'Токен не подходит или нет прав на запись':'Ошибка '+r.status);
+  const j=await r.json();sha1=j.sha;data=JSON.parse(b64dec(j.content));data.config=data.config||{};data.letters=data.letters||[];Object.keys(SCH).forEach(k=>data.config[k]=data.config[k]||[]);
+  localStorage.setItem('ow_admin',JSON.stringify(S));$('login').style.display='none';$('main').style.display='block';fill();draw();drawSecs();say('Подключено ✓');loadEv();setInterval(()=>{if(!$('act').classList.contains('on'))loadEv()},60000)}
+ catch(e){say(e.message,1);$('login').style.display='block'}}
+const SET={cTitle:'title',cSub:'subtitle',cStart:'startDate',cMeet:'meetDate',cQuizEnd:'quizEnd',cMus:'music',cDb:'dbUrl',cKey:'dbKey'};
+function fill(){Object.entries(SET).forEach(([i,k])=>$(i).value=data.config[k]||'');$('cPin').value='';setRules()}
+[...Object.keys(SET),'cPin'].forEach(i=>$(i).oninput=()=>{mark();if(i==='cKey')setRules()});
+
+/* ---------- активность ---------- */
+let EV=[],stats={};
+const dbBase=()=>{const u=$('cDb').value.trim(),k=$('cKey').value.trim();return u&&k?`${u.replace(/\/$/,'')}/log/${k}/events.json`:''};
+function setRules(){const k=$('cKey').value.trim()||'ВАШ_КЛЮЧ';$('rules').value=JSON.stringify({rules:{'.read':false,'.write':false,log:{'$k':{'.read':`$k === '${k}'`,'.write':`$k === '${k}'`}}}},null,2)}
+$('genKey').onclick=()=>{const a=new Uint8Array(12);crypto.getRandomValues(a);$('cKey').value=[...a].map(x=>x.toString(36).padStart(2,'0')).join('').slice(0,20);setRules();mark()};
+function statStr(id){if(!dbBase())return '';const s=stats[id];if(!s||!s.o)return ' · не открыто';return ' · 👁'+s.o+(s.r?' ✔ прочитано':'')+(s.x.length?' '+[...new Set(s.x)].join(''):'')+(s.p?' ✍️'+s.p:'')}
+const seen=()=>+(localStorage.getItem('ow_seen')||0);
+function calcStats(){stats={};EV.forEach(e=>{const s=stats[e.l]=stats[e.l]||{o:0,r:0,x:[],p:0};if(e.k==='open')s.o++;if(e.k==='read')s.r++;if(e.k==='react')s.x.push(e.d);if(e.k==='reply')s.p++})}
+function badge(){const n=EV.filter(e=>e.t>seen()).length;$('actBtn').textContent='📬 Активность'+(n?` (+${n})`:'')}
+async function loadEv(){const b=dbBase();if(!b){EV=[];calcStats();draw();return false}
+ try{const r=await fetch(b+'?orderBy='+encodeURIComponent('"$key"')+'&limitToLast=300');if(!r.ok)throw new Error(r.status===401?'нет доступа, проверь правила и ключ':'ошибка '+r.status);const j=await r.json()||{};EV=Object.keys(j).sort().map(k=>j[k]);calcStats();draw();badge();return true}
+ catch(e){say('Активность не загрузилась: '+e.message,1);return false}}
+const when=t=>new Date(t).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+function evText(e){const n=`«${esc(e.n)}»`;return({open:`👁 открыла ${n}`,read:`✔ дочитала ${n}`,react:`${esc(e.d)} реакция на ${n}`,reply:`✍️ ответила на ${n}:<br><b>${esc(e.d)}</b>`,coupon:`🎟 использовала купон «${esc(e.d)}»`,todo:`✅ ${esc(e.d)}`,quiz:`❓ квиз: ${esc(e.d)}`})[e.k]||esc(e.k)}
+function drawAct(){const op=new Set(EV.filter(e=>e.k==='open').map(e=>e.l)),rd=new Set(EV.filter(e=>e.k==='read').map(e=>e.l));
+ $('actSum').innerHTML=dbBase()?`Открыто писем: <b>${[...op].filter(i=>data.letters.some(l=>l.id===i)).length}</b> из ${data.letters.length} · дочитано: <b>${rd.size}</b> · ответов: <b>${EV.filter(e=>e.k==='reply').length}</b>`:'База не подключена. Заполни «Адрес базы» и «Секретный ключ» в настройках.';
+ $('actList').innerHTML=EV.length?EV.slice().reverse().slice(0,120).map(e=>`<div class="it"><div class="t" style="white-space:normal"><small>${when(e.t)}</small><div>${evText(e)}</div></div></div>`).join(''):'<div class="hint">Пока ничего нет.</div>'}
+$('actBtn').onclick=async()=>{await loadEv();drawAct();localStorage.setItem('ow_seen',String(Date.now()));badge();$('act').classList.add('on');window.scrollTo(0,0)};
+$('actBack').onclick=()=>$('act').classList.remove('on');
+$('actRef').onclick=async()=>{await loadEv();drawAct()};
+
+/* ---------- письма ---------- */
+function draw(){const L=$('list');L.innerHTML='<b>Письма</b>';
+ data.letters.forEach((l,i)=>{const d=document.createElement('div');d.className='it';
+  d.innerHTML=`<div class="em" style="background:${l.c}">${esc(l.emoji)}</div><div class="t"><b>${esc(l.title)}</b><small>${l.type==='secret'?'секретное':l.type==='hug'?'объятия':'обычное'}${l.unlock?' · с '+l.unlock:''}${(l.photos&&l.photos.length)?' · фото '+l.photos.length:''}${statStr(l.id)}</small></div><button class="ic" data-a="up">▲</button><button class="ic" data-a="dn">▼</button><button class="ic" data-a="ed">✏️</button><button class="ic" data-a="rm">🗑</button>`;
+  d.querySelectorAll('button').forEach(b=>b.onclick=()=>act(data.letters,b.dataset.a,i,()=>edit(i),draw,b));L.appendChild(d)})}
+function arm(btn,txt){if(btn.dataset.arm)return true;const old=btn.textContent;btn.dataset.arm='1';btn.textContent=txt;btn.style.cssText='font-size:14px;color:#fff;background:#d63a6a;border-radius:999px;padding:6px 10px';
+ setTimeout(()=>{if(btn.isConnected){delete btn.dataset.arm;btn.textContent=old;btn.style.cssText=''}},3000);return false}
+function act(A,a,i,editFn,redraw,btn){
+ if(a==='up'&&i>0)[A[i-1],A[i]]=[A[i],A[i-1]];
+ if(a==='dn'&&i<A.length-1)[A[i+1],A[i]]=[A[i],A[i+1]];
+ if(a==='rm'){if(!arm(btn,'Удалить?'))return;A.splice(i,1)}
+ if(a==='ed')return editFn();
+ mark();redraw()}
+$('add').onclick=()=>edit(-1);
+$('months').onclick=()=>{if(!arm($('months'),'Точно добавить 12 писем?'))return;delete $('months').dataset.arm;const n=new Date();
+ for(let k=1;k<=12;k++){const d=new Date(n.getFullYear(),n.getMonth()+k,1);const iso=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+  data.letters.push({id:'m'+Date.now()+k,emoji:'🗓',title:'Открой '+d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'}),text:'Напиши письмо на этот месяц ✍️',c:PAL[k%PAL.length][0],c2:PAL[k%PAL.length][1],type:'',unlock:iso,audio:'',photos:[]})}
+ mark();draw()};
+function edit(i){editIdx=i;const l=i>=0?data.letters[i]:{emoji:'💌',title:'Открой, когда…',text:'',c:PAL[0][0],c2:PAL[0][1],type:'',unlock:'',audio:'',photos:[],bg:''};
+ $('shT').textContent=i>=0?'Редактирование':'Новое письмо';$('fE').value=l.emoji;$('fT').value=l.title;$('fX').value=l.text;$('fY').value=l.type||'';$('fB').value=l.bg||'';$('fU').value=l.unlock||'';$('fA').value=l.audio||'';
+ col=Math.max(0,PAL.findIndex(p=>p[0]===l.c));$('fC').innerHTML=PAL.map((p,k)=>`<i data-k="${k}" class="${k===col?'on':''}" style="background:linear-gradient(135deg,${p[0]},${p[1]})"></i>`).join('');
+ $('fC').querySelectorAll('i').forEach(e=>e.onclick=()=>{col=+e.dataset.k;$('fC').querySelectorAll('i').forEach(x=>x.classList.toggle('on',x===e))});
+ curPhotos=(l.photos||[]).map(p=>({path:p,prev:rawUrl(p)}));drawPh();$('fPs').textContent='';$('sheet').classList.add('on');window.scrollTo(0,0)}
+$('fCancel').onclick=()=>$('sheet').classList.remove('on');
+$('fOk').onclick=()=>{const l={id:editIdx>=0?data.letters[editIdx].id:'l'+Date.now(),emoji:$('fE').value||'💌',title:$('fT').value||'Открой, когда…',text:$('fX').value,c:PAL[col][0],c2:PAL[col][1],type:$('fY').value,bg:$('fB').value,unlock:$('fU').value,audio:$('fA').value.trim(),photos:curPhotos.map(x=>x.path)};
+ if(editIdx>=0)data.letters[editIdx]=l;else data.letters.push(l);$('sheet').classList.remove('on');mark();draw()};
+function drawPh(){const P=$('fP');P.innerHTML='';curPhotos.forEach((x,i)=>{const d=document.createElement('div');d.style.backgroundImage=`url(${x.prev})`;const b=document.createElement('b');b.textContent='✕';b.onclick=()=>{curPhotos.splice(i,1);drawPh()};d.appendChild(b);P.appendChild(d)})}
+
+/* ---------- загрузка фото ---------- */
+function shrink(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',.82))};im.onerror=()=>no(new Error('Не удалось прочитать фото'));im.src=u})}
+function pickPhotos(multi,status,onEach){const f=$('file');f.multiple=multi;f.onchange=async e=>{const fs=[...e.target.files];e.target.value='';let n=0;
+ for(const file of fs){n++;status(`Загружаю фото ${n} из ${fs.length}…`);
+  try{const url=await shrink(file),name=`photos/${Date.now()}-${n}.jpg`;
+   const r=await api(name,{method:'PUT',body:JSON.stringify({message:'add photo',content:url.split(',')[1],branch:S.br})});
+   if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(j.message||'Ошибка '+r.status)}
+   onEach({path:name,prev:url})}
+  catch(err){status('Не загрузилось: '+err.message);return}}
+ status('Фото загружены ✓ Нажми «Готово», потом «Опубликовать на сайте»')};f.click()}
+$('fPb').onclick=()=>pickPhotos(true,t=>$('fPs').textContent=t,x=>{curPhotos.push(x);drawPh()});
+
+/* ---------- разделы ---------- */
+function drawSecs(){$('secs').innerHTML='';Object.entries(SCH).forEach(([k,s])=>{const b=document.createElement('button');b.className='btn g';b.textContent=`${s.t} (${data.config[k].length})`;b.onclick=()=>openList(k);$('secs').appendChild(b)})}
+const itemTitle=x=>x.title||x.text||x.q||x.caption||x.photo||'—';
+function openList(k){secKey=k;$('lT').textContent=SCH[k].t;drawList();$('lsheet').classList.add('on');window.scrollTo(0,0)}
+function drawList(){const A=data.config[secKey],L=$('lList');L.innerHTML=A.length?'':'<div class="hint">Пока пусто. Нажми «Добавить».</div>';
+ A.forEach((x,i)=>{const d=document.createElement('div');d.className='it';
+  d.innerHTML=`<div class="em">${x.photo?'🖼':esc(x.emoji||'•')}</div><div class="t"><b>${esc(itemTitle(x))}</b><small>${esc(x.date||x.artist||'')}${x.done?'✓ сделано':''}</small></div><button class="ic" data-a="up">▲</button><button class="ic" data-a="dn">▼</button><button class="ic" data-a="ed">✏️</button><button class="ic" data-a="rm">🗑</button>`;
+  d.querySelectorAll('button').forEach(b=>b.onclick=()=>act(A,b.dataset.a,i,()=>editItem(i),()=>{drawList();drawSecs()},b));L.appendChild(d)})}
+$('lBack').onclick=()=>{$('lsheet').classList.remove('on');drawSecs()};
+$('lAdd').onclick=()=>editItem(-1);
+function editItem(i){secIdx=i;const A=data.config[secKey],x=i>=0?A[i]:{};secVals={...x};const F=$('eForm');F.innerHTML='';
+ SCH[secKey].f.forEach(([k,l,t])=>{const w=document.createElement('div');w.innerHTML=`<label>${l}</label>`;let el;
+  if(t==='area'||t==='lines'){el=document.createElement('textarea');el.value=t==='lines'?(x[k]||[]).join('\n'):(x[k]||'')}
+  else if(t==='check'){el=document.createElement('input');el.type='checkbox';el.checked=!!x[k]}
+  else if(t==='photo'){const pv=document.createElement('div');pv.className='ph';const st=document.createElement('div');st.className='hint';
+   const draw1=()=>{pv.innerHTML='';if(secVals[k]){const d=document.createElement('div');d.style.backgroundImage=`url(${secVals[k+'_prev']||rawUrl(secVals[k])})`;const b=document.createElement('b');b.textContent='✕';b.onclick=()=>{secVals[k]='';draw1()};d.appendChild(b);pv.appendChild(d)}};draw1();
+   const b=document.createElement('button');b.type='button';b.className='btn g';b.textContent='＋ Выбрать фото';b.onclick=()=>pickPhotos(false,s=>st.textContent=s,p=>{secVals[k]=p.path;secVals[k+'_prev']=p.prev;draw1()});
+   w.append(pv,b,st);F.appendChild(w);return}
+  else{el=document.createElement('input');el.type=t==='date'?'date':t==='number'?'number':'text';el.value=x[k]==null?'':x[k]}
+  el.dataset.k=k;el.dataset.t=t||'';w.appendChild(el);F.appendChild(w)});
+ $('eT').textContent=i>=0?'Редактирование':'Новая запись';$('esheet').classList.add('on');window.scrollTo(0,0)}
+$('eCancel').onclick=()=>$('esheet').classList.remove('on');
+$('eOk').onclick=()=>{const o={id:secVals.id||'i'+Date.now()};
+ SCH[secKey].f.forEach(([k,l,t])=>{if(t==='photo'){o[k]=secVals[k]||'';return}const el=$('eForm').querySelector(`[data-k="${k}"]`);
+  o[k]=t==='check'?el.checked:t==='lines'?el.value.split('\n').map(s=>s.trim()).filter(Boolean):t==='number'?(+el.value||1):el.value.trim()});
+ const A=data.config[secKey];if(secIdx>=0)A[secIdx]=o;else A.push(o);$('esheet').classList.remove('on');mark();drawList();drawSecs()};
+
+/* ---------- публикация ---------- */
+$('pub').onclick=async()=>{if(!data)return;const c=data.config;Object.entries(SET).forEach(([i,k])=>c[k]=$(i).value.trim());
+ const p=$('cPin').value.trim();if(p==='-')c.pinHash='';else if(p)c.pinHash=await sha(p);
+ say('Публикую…');
+ try{const r=await api('letters.json',{method:'PUT',body:JSON.stringify({message:'update site',content:b64enc(JSON.stringify(data,null,2)),sha:sha1,branch:S.br})});
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(r.status===409?'Файл уже изменили в другом месте, обнови страницу':r.status===404?'Not Found: репозиторий '+S.repo+' или токен указаны неверно. Нажми «Сменить репозиторий / токен» вверху':(e.message||'Ошибка '+r.status))}
+  sha1=(await r.json()).content.sha;dirty=false;$('cPin').value='';say('Опубликовано ✓ Сайт обновится через 1–2 минуты')}
+ catch(e){say(e.message,1)}};
+window.onbeforeunload=()=>dirty?'Есть неопубликованные изменения':undefined;
+</script>
+</body>
+</html>
