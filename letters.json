@@ -8,7 +8,13 @@
     "timeline": [],
     "coupons": [],
     "checklist": [],
-    "gallery": [],
+    "gallery": [
+      {
+        "id": "i1795127327609",
+        "photo": "photos/1795127285597-1.jpg",
+        "caption": "Мне всегда нравилось ходить с тобой по магазинам и когда ты примеряешь всякие вещи."
+      }
+    ],
     "quiz": [],
     "playlist": [],
     "holidays": [],
@@ -105,19 +111,6 @@
       "type": "secret",
       "unlock": "",
       "audio": ""
-    },
-    {
-      "id": "l1795126330512",
-      "emoji": "💌",
-      "title": "Открой, когда…АЫАЫАЫАЫА",
-      "text": "",
-      "c": "#fbd3de",
-      "c2": "#f4b6c8",
-      "type": "",
-      "bg": "",
-      "unlock": "",
-      "audio": "",
-      "photos": []
     }
   ]
 }
