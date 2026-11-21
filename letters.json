@@ -65,8 +65,10 @@
       "c": "#fbc9cf",
       "c2": "#f2a3ae",
       "type": "",
+      "bg": "sakura",
       "unlock": "",
-      "audio": ""
+      "audio": "",
+      "photos": []
     },
     {
       "id": "sleep",
